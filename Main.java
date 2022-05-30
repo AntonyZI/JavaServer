@@ -31,7 +31,10 @@ public class Main {
                     OutputStream streamToClient = socketToClient.getOutputStream();
                     DataOutputStream dataStreamToClient = new DataOutputStream(streamToClient);
                     
-                    dataStreamToClient.writeUTF("Message sent from a client");
+                    while(sc.hasNextLine()){
+                        String lineIn = sc.nextLine();
+                        dataStreamToClient.writeUTF(lineIn);
+                    }
                     
                 } catch (IOException ex) {
                     System.out.println(ex.getMessage());
