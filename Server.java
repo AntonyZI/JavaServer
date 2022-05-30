@@ -27,6 +27,8 @@ public class Server {
             InputStream streamToClient = clientSockets[0].getInputStream();
             DataInputStream dataStreamToClient = new DataInputStream(streamToClient);
             
+            System.out.println(dataStreamToClient.readUTF());
+            
             clientSvSockets[0].close();
         } catch (IOException ex) {
             System.out.println(ex.getMessage());
