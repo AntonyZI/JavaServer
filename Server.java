@@ -28,7 +28,7 @@ public class Server {
             DataInputStream dataStreamToClient = new DataInputStream(streamToClient);
             
             while(true){
-                String lineIn = dataStreamToClient.readUTF();
+                String lineIn = dataStreamToClient.readUTF(); // Waits for stream input until user sends message
                 System.out.println(lineIn);
                 if(lineIn.equals("^D")){ // EOF
                     break;
