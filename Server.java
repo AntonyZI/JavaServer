@@ -30,7 +30,7 @@ public class Server {
             while(true){
                 String lineIn = dataStreamToClient.readUTF();
                 System.out.println(lineIn);
-                if(lineIn.equals("QUIT")){
+                if(lineIn.equals("^D")){ // EOF
                     break;
                 }
             }

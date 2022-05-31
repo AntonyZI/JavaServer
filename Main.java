@@ -26,7 +26,7 @@ public class Main {
                 System.out.print("  Port: ");
                 int svPort = sc.nextInt();
                 
-                try {
+                /*try {
                     Socket socketToClient = new Socket(svIp,svPort);
                     OutputStream streamToClient = socketToClient.getOutputStream();
                     DataOutputStream dataStreamToClient = new DataOutputStream(streamToClient);
@@ -38,7 +38,14 @@ public class Main {
                     
                 } catch (IOException ex) {
                     System.out.println(ex.getMessage());
-                }
+                }*/
+                
+                Client socketToClient = new Client(svIp, svPort);
+                socketToClient.enableSocket(0);
+                socketToClient.sendMessage("Hola");
+                socketToClient.sendMessage("^D");
+                //socketToClient.closeSocket(0);
+                
                 break;
 
             default:
