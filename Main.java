@@ -25,6 +25,7 @@ public class Main {
                 String svIp = sc.nextLine();
                 System.out.print("  Port: ");
                 int svPort = sc.nextInt();
+                sc.nextLine();
                 
                 Client socketToClient = new Client(svIp, svPort);
                 socketToClient.enableSocket(0);
