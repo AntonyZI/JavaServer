@@ -17,7 +17,15 @@ public class Main {
         int optionInt = sc.nextInt();
         switch(optionInt){
             case 1:
+                sc.nextLine();
                 Server theServer = new Server();
+                
+                System.out.println("Server started");
+                while(sc.hasNextLine()){
+                    String lineIn = sc.nextLine();
+                    theServer.sendMessage(lineIn);
+                }
+                theServer.closeServer();
                 break;
             case 2:
                 sc.nextLine();
@@ -29,7 +37,7 @@ public class Main {
                 
                 Client socketToClient = new Client(svIp, svPort);
                 socketToClient.enableSocket(0);
-                System.out.println("Connected to server");
+                System.out.println("Connecting to server . . .");
                 while(sc.hasNextLine()){
                     String lineIn = sc.nextLine();
                     socketToClient.sendMessage(lineIn);

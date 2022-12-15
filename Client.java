@@ -17,36 +17,36 @@ public class Client {
     private String ipAddress; // Ip address to server
     private int port; // port on ip address to connect
     
-    private Socket[] clientSockets; // Sockets created to conect to server
+    private Socket clientSockets; // Sockets created to conect to server
     // First socket to connect for commands such as chat messages or
     // user states
-    private OutputStream clientOutputStreams;
-    private DataOutputStream clientDataOutputStreams;
+    private OutputStream clientOutputStream;
+    private DataOutputStream clientDataOutputStream;
     
-    private InputStream clientInputStreams;
-    private DataInputStream clientDataInputStreams;
+    private InputStream clientInputStream;
+    private DataInputStream clientDataInputStream;
     
     private Thread dataInputThread;
     
     public Client(String ipAddress, int port){
         this.ipAddress = ipAddress;
         this.port = port;
-        clientSockets = new Socket[1];
+        //clientSockets = new Socket[1];
         //clientDataOutputStreams = new DataOutputStream[1];
         //clientDataInputStreams = new DataInputStream[1];
         
     }
     public void enableSocket(int n){
         try {
-            clientSockets[n] = new Socket(this.ipAddress, this.port);
+            clientSockets = new Socket(this.ipAddress, this.port);
             
-            clientOutputStreams = clientSockets[n].getOutputStream();
-            clientDataOutputStreams = new DataOutputStream(clientOutputStreams);
+            clientOutputStream = clientSockets.getOutputStream();
+            clientDataOutputStream = new DataOutputStream(clientOutputStream);
             
-            clientInputStreams = clientSockets[n].getInputStream();
-            clientDataInputStreams = new DataInputStream(clientInputStreams);
+            clientInputStream = clientSockets.getInputStream();
+            clientDataInputStream = new DataInputStream(clientInputStream);
             
-            dataInputThread = new Thread(new ClientDataInputRunnable(clientDataInputStreams));
+            dataInputThread = new Thread(new ClientDataInputRunnable(clientDataInputStream));
             dataInputThread.start();
             
         } catch (IOException ex) {
@@ -55,15 +55,16 @@ public class Client {
     }
     public void sendMessage(String msg){
         try {
-            clientDataOutputStreams.writeUTF(msg);
+            clientDataOutputStream.writeUTF(msg);
         } catch (IOException ex) {
             System.out.println(ex.getMessage());
         }
     }
     public void closeSocket(int n){
         try {
-            System.out.println("Socket at " + n + " closed successfully`");
-            clientSockets[n].close();
+            //System.out.println("Socket at " + n + " closed successfully`");
+            System.out.println("Socket closed successfully`");
+            clientSockets.close();
         } catch (IOException ex) {
             System.out.println(ex.getMessage());
         }
