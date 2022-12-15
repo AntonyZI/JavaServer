@@ -21,10 +21,10 @@ public class Client {
     // First socket to connect for commands such as chat messages or
     // user states
     private OutputStream clientOutputStreams;
-    private DataOutputStream[] clientDataOutputStreams;
+    private DataOutputStream clientDataOutputStreams;
     
     private InputStream clientInputStreams;
-    private DataInputStream[] clientDataInputStreams;
+    private DataInputStream clientDataInputStreams;
     
     private Thread dataInputThread;
     
@@ -32,8 +32,8 @@ public class Client {
         this.ipAddress = ipAddress;
         this.port = port;
         clientSockets = new Socket[1];
-        clientDataOutputStreams = new DataOutputStream[1];
-        clientDataInputStreams = new DataInputStream[1];
+        //clientDataOutputStreams = new DataOutputStream[1];
+        //clientDataInputStreams = new DataInputStream[1];
         
     }
     public void enableSocket(int n){
@@ -41,12 +41,12 @@ public class Client {
             clientSockets[n] = new Socket(this.ipAddress, this.port);
             
             clientOutputStreams = clientSockets[n].getOutputStream();
-            clientDataOutputStreams[0] = new DataOutputStream(clientOutputStreams);
+            clientDataOutputStreams = new DataOutputStream(clientOutputStreams);
             
             clientInputStreams = clientSockets[n].getInputStream();
-            clientDataInputStreams[0] = new DataInputStream(clientInputStreams);
+            clientDataInputStreams = new DataInputStream(clientInputStreams);
             
-            dataInputThread = new Thread(new ClientDataInputRunnable(clientDataInputStreams[0]));
+            dataInputThread = new Thread(new ClientDataInputRunnable(clientDataInputStreams));
             dataInputThread.start();
             
         } catch (IOException ex) {
@@ -55,7 +55,7 @@ public class Client {
     }
     public void sendMessage(String msg){
         try {
-            clientDataOutputStreams[0].writeUTF(msg);
+            clientDataOutputStreams.writeUTF(msg);
         } catch (IOException ex) {
             System.out.println(ex.getMessage());
         }
