@@ -9,25 +9,29 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class Server {
+    int cantConnections;
     private ServerSocket clientSvSocket;
-    private ServerIORunnable[] clientSocketsRunnables;
-    private Thread[] clientSocketsThreads;
+    private ServerIOLoader[] clientSocketsRunnables;
     private boolean[] enabledSockets;
     
-    public Server(){
+    public Server(int cant){
+        cantConnections = cant;
         //clientSvSockets = new ServerSocket[3];
-        clientSocketsThreads = new Thread[3];
-        clientSocketsRunnables = new ServerIORunnable[3];
+        //clientSocketsThreads = new Thread[3];
+        clientSocketsRunnables = new ServerIOLoader[cantConnections];
         
         try {
             clientSvSocket = new ServerSocket(0);
             System.out.print("Server opened at ");
             System.out.println(clientSvSocket.getInetAddress().getHostName()+":"+clientSvSocket.getLocalPort());
             
-            for(int i = 0; i < clientSocketsThreads.length; i++){
-                (new Thread(new ConstructorServerIOLoader(i))).start();
+            for(int i = 0; i < clientSocketsRunnables.length; i++){
+                clientSocketsRunnables[i] = new ServerIOLoader(i);
+                (new Thread(clientSocketsRunnables[i])).start();
             }
             
         } catch (IOException ex) {
@@ -50,16 +54,24 @@ public class Server {
     private Server getServer(){
         return this;
     }
-    class ConstructorServerIOLoader implements Runnable{
-        private int index;
-        public ConstructorServerIOLoader(int n){
-            index = n;
+    class ServerIOLoader implements Runnable{
+        private int sefverLoaderIndex;
+        private ServerIORunnable serverIoProccess;
+        public ServerIOLoader(int n){
+            sefverLoaderIndex = n;
+        }
+        public void sendMessage(String msg){
+            serverIoProccess.sendMessage(msg);
+        }
+        public void closeServerProccess(){
+            serverIoProccess.closeConnection();
         }
         @Override
         public void run() {
-            clientSocketsRunnables[index] = new ServerIORunnable(clientSvSocket);
-            clientSocketsThreads[index] = new Thread(clientSocketsRunnables[index]);
-            clientSocketsThreads[index].start();
+            serverIoProccess = new ServerIORunnable(clientSvSocket);
+            //clientSocketsThreads[sefverLoaderIndex] = new Thread(serverIoProccess);
+            //clientSocketsThreads[sefverLoaderIndex].start();
+            (new Thread(serverIoProccess)).start();
         }
     }
     class ServerIORunnable implements Runnable{
@@ -70,15 +82,11 @@ public class Server {
         
         private boolean sendingMessage;
         private String msg;
+        
         public ServerIORunnable(ServerSocket svSocket){
             svSocketFromAccept = svSocket;
             try{
-                System.out.println("Waiting for the client'a socket . . .");
-                actualSocket = svSocketFromAccept.accept();
-                System.out.println("Successfull client's socket connection");
-                inputStream = new DataInputStream(actualSocket.getInputStream());
-                outputStream = new DataOutputStream(actualSocket.getOutputStream());
-                outputStream.writeUTF("CONNECTION ESTABLISHED (sent by server)");
+                openNewSocket();
             } catch (IOException ex) {
                 System.out.println(ex.getMessage());
             }
@@ -89,6 +97,21 @@ public class Server {
             } catch (IOException ex) {
                 System.out.println(ex.getMessage());
             }
+        }
+        public void closeConnection(){
+            try {
+                actualSocket.close();
+            } catch (IOException ex) {
+                System.out.println(ex.getMessage());
+            }
+        }
+        private void openNewSocket() throws IOException{
+            System.out.println("Waiting for the client'a socket . . .");
+            actualSocket = svSocketFromAccept.accept();
+            System.out.println("Successfull client's socket connection");
+            inputStream = new DataInputStream(actualSocket.getInputStream());
+            outputStream = new DataOutputStream(actualSocket.getOutputStream());
+            outputStream.writeUTF("CONNECTION ESTABLISHED (sent by server)");
         }
         
         @Override
@@ -103,13 +126,7 @@ public class Server {
                             break;
                         }
                     }
-                    System.out.println("Waiting for the client'a socket . . .");
-                    actualSocket = svSocketFromAccept.accept();
-                    System.out.println("Successfull client's socket connection");
-                    
-                    inputStream = new DataInputStream(actualSocket.getInputStream());
-                    outputStream = new DataOutputStream(actualSocket.getOutputStream());
-                    outputStream.writeUTF("CONNECTION ESTABLISHED (sent by server)");
+                    openNewSocket();
                 }
             } catch (IOException ex) {
                 System.out.println(ex.getMessage());

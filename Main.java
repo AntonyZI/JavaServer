@@ -18,7 +18,7 @@ public class Main {
         switch(optionInt){
             case 1:
                 sc.nextLine();
-                Server theServer = new Server();
+                Server theServer = new Server(10);
                 
                 System.out.println("Server started");
                 while(sc.hasNextLine()){
